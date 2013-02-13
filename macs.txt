@@ -1,0 +1,96 @@
+;macros!
+
+_display MACRO dummyArray
+
+;Display first string
+mov ah,9
+mov dx, offset dummyArray
+int 21h
+
+ENDM
+
+_pushAD MACRO
+	push ax
+	push bx
+	push cx
+	push dx
+ENDM
+
+_popAD MACRO
+	pop dx
+	pop cx
+	pop bx
+	pop ax
+ENDM
+
+_storeCurrentVideoMode MACRO dummyVariable
+
+mov ah,0fh				;get the current video mode, store in al
+int 10h
+mov dummyVariable,al	;save the current video mode in dummyVariable
+
+ENDM
+
+_changeVideoMode MACRO dummyVariable
+
+mov ah, 0
+mov al,dummyVariable
+int 10h
+
+ENDM
+
+_clearScreen MACRO
+
+mov ah,6								;scroll window up
+mov al,0 								;entire window
+mov ch,0								;upper left row
+mov cl,0								;upper left column
+mov dh,24								;lower right row
+mov dl,79								;lower right column
+mov bh,00ffh							;normal attribute
+int 10h									;call BIOS
+
+ENDM
+
+_moveCursor MACRO rowVariable, colVariable
+
+;move the cursor
+mov ah,2
+mov dh,rowVariable
+mov dl,colVariable
+mov bh,0
+int 10h
+
+ENDM
+
+
+_getClicks MACRO
+
+mov ax,5h	;stores number of clicks in bx
+mov bx,0h	;left button
+int 33h
+
+
+ENDM
+
+_waitForKeyToBePressed MACRO 
+
+mov ah,7		;console input function
+int 21h			;call DOS: Al = key pressed
+
+
+
+
+ENDM
+
+_convertToAscii MACRO dummyArray
+mov ax,bx					;because number of clicks is stored in bx
+mov dl,10
+div dl						;al will be quotient,ah will be remainder
+or ax,3030h					;change to ascii
+
+mov di,offset dummyArray
+mov [di],al
+mov[di + 1],ah
+
+ENDM

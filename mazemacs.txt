@@ -1,0 +1,66 @@
+;Maze Macros
+
+;colPos and rowPos are offset values. The starting col Position is 130, the starting row position is 10
+_drawUpDownWall MACRO colPos, rowPos
+LOCAL @@drawUpDown
+	_pushAD
+	mov bx, rowPos		;offset of colum position
+	add bx, 22			;end location (Note, end is 12 beyond start)
+	mov al, 1100b		;Color of line
+	mov cx, colPos		;offset
+	add cx, 130			;offset + 130 = desired position
+	mov dx, rowPos		;offset
+	add dx, 10			;offset + 10 = desired position
+	mov ah, 0ch
+@@drawUpDown:
+	int 10h     		;set pixel.
+	
+	_delay
+	
+	inc dx				;goto next row
+	cmp dx, bx			;If we have not fisnished. Draw next pixel
+	jbe @@drawUpDown
+	
+	_popAD
+ENDM
+
+;colPos and rowPos are offset values. The starting col Position is 130, the starting row position is 10
+_drawLeftRightWall MACRO colPos, rowPos
+LOCAL @@drawLeftRight
+	_pushAD
+	mov bx, colPos		;offset of row position
+	add bx, 142			;end location (Note, end is 12 beyond start)
+	mov al, 1100b		;Color of line
+	mov cx, colPos		;offset
+	add cx, 130			;offset + 130 = desired position
+	mov dx, rowPos		;offset
+	add dx, 10			;offset + 10 = desired position
+	mov ah, 0ch
+@@drawLeftRight:
+	int 10h     ;set pixel.
+	
+	_delay
+	
+	inc cx
+	cmp cx, bx
+	jbe @@drawLeftRight
+	_popAD
+ENDM
+
+;This will just make the program pause
+_delay MACRO
+
+	_pushAD
+	
+	mov cx, 350
+	
+	wait1:
+	in al,61h
+	and al,10h
+	cmp al,ah
+	je wait1
+	mov ah,al
+	loop wait1
+	
+	_popAD
+ENDM
